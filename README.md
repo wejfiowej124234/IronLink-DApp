@@ -43,7 +43,9 @@ IronLink is a **100% Rust-powered, non-custodial** mobile wallet for iOS and And
 
 ## Features
 
-- **Multi-Chain Support**: Ethereum, Bitcoin, Solana, BSC, Polygon
+- **Multi-Chain Support**: 
+  - Currently: Ethereum, BSC, Polygon, Bitcoin ✅
+  - Coming: Solana (~1 week), Cosmos (~3 days) 🔥
 - **Non-Custodial**: Private keys stored locally on device
 - **Hardware Security**: Integration with Secure Enclave (iOS) and TEE (Android)
 - **Biometric Authentication**: Face ID, Touch ID, Fingerprint support
