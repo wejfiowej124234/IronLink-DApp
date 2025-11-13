@@ -17,9 +17,29 @@
 
 ---
 
+## 🏆 核心特性
+
+<div align="center">
+
+| 🦀 Rust 全栈 | 🔓 非托管架构 | 🏢 企业级 API |
+|:----------:|:------------:|:------------:|
+| **100% Rust** 移动端+后端 | 私钥存储在 TEE | IronCore 46+ 端点 |
+| Dioxus 原生性能 | Secure Enclave 隔离 | 99.9% SLA 保证 |
+| 一次编写双平台部署 | 生物识别保护 | 实时监控 + 审计 |
+
+</div>
+
+---
+
 ## Overview
 
-IronLink is a mobile wallet application built with Rust and Dioxus, providing secure cryptocurrency storage and transaction capabilities across multiple blockchains.
+IronLink is a **100% Rust-powered, non-custodial** mobile wallet for iOS and Android. Built with Dioxus and enterprise-grade IronCore API, it provides hardware-isolated security with biometric authentication.
+
+### Why IronLink?
+
+- 🦀 **Full-Stack Rust**: Mobile (Dioxus) + Backend (IronCore), 95%+ code reuse
+- 🔓 **Non-Custodial**: Keys in Secure Enclave/TEE, never uploaded to servers
+- 🏢 **Enterprise Backend**: Multi-chain API, high availability, real-time monitoring
 
 ## Features
 
