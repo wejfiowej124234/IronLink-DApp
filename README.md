@@ -1,6 +1,21 @@
-# IronLink DApp
+# IronLink DApp - Mobile Wallet
 
-A non-custodial cryptocurrency wallet for iOS and Android.
+> 📱 Non-custodial cryptocurrency wallet for iOS and Android
+
+---
+
+## 🌐 Iron Blockchain Wallet Ecosystem
+
+| # | Project | Description | Repository |
+|---|---------|-------------|------------|
+| 1️⃣ | **IronCore** | 🎯 钱包后端 - Backend API Server | [→ Visit](https://github.com/wejfiowej124234/IronCore) |
+| 2️⃣ | **IronForge** | 🌐 前端钱包 - Web Wallet | [→ Visit](https://github.com/wejfiowej124234/IronForge) |
+| 3️⃣ | **IronLink-DApp** | 📱 移动端 - Mobile DApp Wallet | 👉 **[You are here]** |
+| 4️⃣ | **IronGuard-AI** | 🤖 AI安全 - AI Security Layer | [→ Visit](https://github.com/wejfiowej124234/ironguard-ai) |
+| 5️⃣ | **IronVault-XR** | 🥽 智能眼镜 - AR/VR Wallet | [→ Visit](https://github.com/wejfiowej124234/IronVault-XR) |
+| 6️⃣ | **Attack-Defense** | ⚔️ 攻防知识库 - Security Knowledge Base | [→ Visit](https://github.com/wejfiowej124234/Attack-Defense) |
+
+---
 
 ## Overview
 
@@ -15,14 +30,17 @@ IronLink is a mobile wallet application built with Rust and Dioxus, providing se
 - **Transaction Management**: Send, receive, and track transactions
 - **Asset Overview**: View balances and transaction history
 - **DApp Browser**: Access decentralized applications
+- **Push Notifications**: Real-time transaction alerts
+- **Offline Mode**: Queue transactions when offline
 
 ## Architecture
 
-This mobile application connects to a Rust backend API for blockchain interactions:
+This mobile application connects to IronCore backend API for blockchain interactions:
 
 - **Frontend**: Rust + Dioxus (cross-platform mobile framework)
-- **Backend**: [Rust-Blockchain-Secure-Wallet](https://github.com/DarkCrab-Rust/Rust-Blockchain-Secure-Wallet)
+- **Backend**: [IronCore](https://github.com/wejfiowej124234/IronCore)
 - **Security**: Hardware-isolated key storage with biometric authentication
+- **AI Protection**: [IronGuard-AI](https://github.com/wejfiowej124234/ironguard-ai) integration
 
 ## Supported Networks
 
@@ -56,7 +74,7 @@ rustup target add aarch64-apple-ios
 rustup target add aarch64-linux-android
 
 # Clone repository
-git clone https://github.com/DarkCrab-Rust/IronLink-DApp.git
+git clone https://github.com/wejfiowej124234/IronLink-DApp.git
 cd IronLink-DApp
 
 # Run development build
@@ -70,6 +88,8 @@ dx serve --platform mobile
 - Biometric authentication required for transactions
 - Local encrypted storage (AES-256-GCM)
 - Open source code for community audit
+- Real-time threat detection with [IronGuard-AI](https://github.com/wejfiowej124234/ironguard-ai)
+- Protected against [77+ attack types](https://github.com/wejfiowej124234/Attack-Defense)
 
 ## Project Structure
 
@@ -84,15 +104,6 @@ IronLink-DApp/
 └── Dioxus.toml
 ```
 
-## Ecosystem
-
-Part of the DarkCrab-Rust blockchain wallet ecosystem:
-
-- **Backend API**: [Rust-Blockchain-Secure-Wallet](https://github.com/DarkCrab-Rust/Rust-Blockchain-Secure-Wallet)
-- **Web Frontend**: [blockchain-wallet-ui](https://github.com/DarkCrab-Rust/blockchain-wallet-ui)
-- **AI Security**: [IronGuard-AI](https://github.com/DarkCrab-Rust/ironguard-ai)
-- **AR Wallet**: [IronVault-XR](https://github.com/DarkCrab-Rust/IronVault-XR)
-
 ## License
 
 MIT License - see [LICENSE](LICENSE) for details
@@ -103,8 +114,8 @@ Contributions welcome. Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guideli
 
 ## Contact
 
-- GitHub Issues: [Report bugs or request features](https://github.com/DarkCrab-Rust/IronLink-DApp/issues)
-- Repository: https://github.com/DarkCrab-Rust/IronLink-DApp
+- GitHub Issues: [Report bugs or request features](https://github.com/wejfiowej124234/IronLink-DApp/issues)
+- Repository: https://github.com/wejfiowej124234/IronLink-DApp
 
 ## Disclaimer
 
@@ -113,3 +124,7 @@ This software is provided "as is" without warranty. Users are responsible for se
 ## Status
 
 Currently in development. Expected release: Q1 2026.
+
+---
+
+**Built with ❤️ using Rust + Dioxus**
