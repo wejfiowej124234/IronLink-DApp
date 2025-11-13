@@ -109,7 +109,162 @@
 
 ### 项目定位
 
-**IronLink DApp** 是一个采用 **100% Rust** 技术栈开发的跨平台非托管加密钱包，通过 **Dioxus** 框架实现一套代码编译到多个平台。
+**IronLink DApp** 是一个采用 **100% Rust** 技术栈开发的跨平台非托管加密钱包，通过 **Dioxus** 框架实现一套代码编译到多个平台。支持多链资产管理，一个助记词管理所有区块链。
+
+---
+
+## 🔗 多链支持架构
+
+### 移动端多链实现
+
+| 区块链 | 曲线 | BIP44 路径 | 存储位置 | 状态 |
+|--------|------|-----------|---------|------|
+| **Ethereum** | secp256k1 | m/44'/60'/0'/0/0 | Secure Enclave/TEE | ✅ 已支持 |
+| **BSC** | secp256k1 | m/44'/60'/0'/0/0 | Secure Enclave/TEE | ✅ 已支持 |
+| **Polygon** | secp256k1 | m/44'/60'/0'/0/0 | Secure Enclave/TEE | ✅ 已支持 |
+| **Bitcoin** | secp256k1 | m/44'/0'/0'/0/0 | Secure Enclave/TEE | ✅ 已支持 |
+| **Solana** | **ed25519** | m/44'/501'/0'/0' | Secure Enclave/TEE | 🔥 Phase 2 |
+| **Cosmos** | secp256k1 | m/44'/118'/0'/0/0 | Secure Enclave/TEE | ⭐ Phase 3 |
+
+**关键差异**:
+```
+secp256k1 (Ethereum/Bitcoin) - 已支持 ✅
+    ↕️ 需要扩展
+ed25519 (Solana/Cardano) - 1 周可完成 🔥
+```
+
+---
+
+### 统一助记词方案
+
+```
+        一个 BIP39 助记词 (12 个单词)
+                  ↓
+            生成 512-bit Seed
+            存储在 Secure Enclave/TEE
+                  ↓
+      ┌───────────┴───────────┐
+      ↓                       ↓
+  BIP32 派生            SLIP-0010 派生
+  (secp256k1)            (ed25519)
+      ↓                       ↓
+  Ethereum                Solana
+  Bitcoin                 Cardano
+  Cosmos                  Polkadot
+```
+
+**移动端优势**:
+- ✅ 私钥存储在硬件隔离区 (Secure Enclave/TEE)
+- ✅ 生物识别保护 (Face ID/Touch ID/Fingerprint)
+- ✅ 一个助记词管理所有链
+- ✅ 离线签名能力
+- ✅ 比 Web 钱包更安全
+
+---
+
+### 移动端多链实现
+
+```rust
+// mobile/src/wallet/multi_chain.rs
+
+use bip39::{Mnemonic, Language};
+use ed25519_dalek::SigningKey;
+use k256::ecdsa::SigningKey as Secp256k1Key;
+use slip10::{derive_key_from_path, Curve};
+
+pub struct MultiChainMobileWallet {
+    /// 种子存储在 Secure Enclave (iOS) / AndroidKeystore (Android)
+    secure_storage: SecureStorage,
+}
+
+impl MultiChainMobileWallet {
+    /// 创建多链钱包
+    pub async fn create(password: &str, chains: Vec<Chain>) -> Result<Self, WalletError> {
+        // 1. 生成助记词
+        let mnemonic = Mnemonic::generate(12)?;
+        
+        // 2. 派生种子
+        let seed = mnemonic.to_seed("");
+        
+        // 3. 存储到 Secure Enclave/TEE (加密)
+        let secure_storage = SecureStorage::new();
+        secure_storage.store_seed(&seed, password).await?;
+        
+        // 4. 派生所有链的地址
+        let mut addresses = HashMap::new();
+        for chain in chains {
+            let address = Self::derive_address(&seed, &chain, 0)?;
+            addresses.insert(chain, address);
+        }
+        
+        // 5. 清零种子（已存储到 Secure Enclave）
+        drop(Zeroizing::new(seed));
+        drop(Zeroizing::new(mnemonic));
+        
+        Ok(MultiChainMobileWallet { secure_storage })
+    }
+    
+    /// 派生地址（根据链类型）
+    fn derive_address(seed: &[u8; 64], chain: &Chain, index: u32) -> Result<String, WalletError> {
+        match chain {
+            Chain::Ethereum | Chain::BSC | Chain::Polygon => {
+                // BIP32 派生 (secp256k1)
+                derive_ethereum_address(seed, index)
+            },
+            Chain::Solana => {
+                // SLIP-0010 派生 (ed25519)
+                let (_, address) = slip10_derive_solana(seed, index)?;
+                Ok(address)
+            },
+            Chain::Bitcoin => {
+                derive_bitcoin_address(seed, index)
+            },
+            Chain::Cosmos => {
+                derive_cosmos_address(seed, index)
+            },
+        }
+    }
+    
+    /// 签名交易（使用生物识别解锁）
+    pub async fn sign_transaction(
+        &self,
+        chain: &Chain,
+        tx_data: &[u8],
+        biometric_context: BiometricContext,
+    ) -> Result<Vec<u8>, WalletError> {
+        // 1. 生物识别验证
+        biometric_context.authenticate("签名交易").await?;
+        
+        // 2. 从 Secure Enclave 读取种子
+        let seed = self.secure_storage.retrieve_seed().await?;
+        
+        // 3. 临时派生密钥并签名
+        let signature = match chain {
+            Chain::Ethereum | Chain::BSC | Chain::Polygon => {
+                let wallet = derive_ethereum_wallet(&seed, 0)?;
+                wallet.sign_transaction(tx_data).await?
+            },
+            Chain::Solana => {
+                let (signing_key, _) = slip10_derive_solana(&seed, 0)?;
+                let sig = signing_key.sign(tx_data);
+                sig.to_bytes().to_vec()
+            },
+            Chain::Bitcoin => {
+                let wallet = derive_bitcoin_wallet(&seed, 0)?;
+                wallet.sign_transaction(tx_data)?
+            },
+            _ => return Err(WalletError::UnsupportedChain),
+        };
+        
+        // 4. 清零种子
+        drop(Zeroizing::new(seed));
+        
+        Ok(signature)
+    }
+}
+```
+
+---
 
 ### 应用场景
 
